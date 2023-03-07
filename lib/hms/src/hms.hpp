@@ -1,19 +1,32 @@
+#ifndef ___HMS___
+#define ___HMS___
 #include <Arduino.h>
-#include "LiquidCrystal.h"
-#include "Wire.h"
-#include "HCSR04.h"
-#include "MAX30100_PulseOximeter.h"
-#include "STM32LowPower.h"
+#include <LiquidCrystal.h>
+#include <Wire.h>
+#include <HCSR04.h>
+#include <STM32LowPower.h>
+#include "hms.hpp"
+#include <pulseSensor.h>
 
-#define sleep_btn PC13
+#define sleepBtn PB12
+#define pulse_sensor PA5
+#define led LED_BUILTIN
 
-typedef const uint8_t& pin_t
+typedef const uint8_t& pin_t;
 
 extern LiquidCrystal lcd;
 extern HCSR04 ultra;
-extern PulseOximeter pox;
-extern float dist;
+//extern PulseOximeter pox;
+extern double dist;
+extern double heartRate;
+extern PulseSensor pulse;
 
 
-void hms_init(pin_t lcd_col, pin_t lcd_row, pin_t );
+
+void hms_init();
+void msg(void);
+void setup();
+void loop();
+
+#endif
 

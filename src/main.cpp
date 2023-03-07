@@ -1,26 +1,15 @@
 #include <Arduino.h>
+#include <LiquidCrystal.h>
+#include <Wire.h>
+#include <HCSR04.h>
+#include <STM32LowPower.h>
 #include "hms.hpp"
-#include "LiquidCrystal.h"
-#include "Wire.h"
-#include "HCSR04.h"
-#include "MAX30100_PulseOximeter.h"
-#include "STM32LowPower.h"
-
-#define REPORTING_PERIOD_MS  1000
+#include <pulseSensor.h>
 
 void setup();
 void loop();
-void msg();
-
-LiquidCrystal lcd (PC14, PC15, PA0, PA1, PA2, PA3);
-
-HCSR04 ultra (PB0, PB1);
-
-PulseOximeter pox;
-
-float dist;
-
-
+double heartRate (0.0), dist (0.0);
+//PulseOximeter pox;
 
 void setup()
 {
@@ -39,10 +28,11 @@ void loop()
   delay(1000);
 
   lcd.setCursor(0, 1);
-  pox.update();
+  heartRate = pulse.read();
+
   lcd.print("Heart Rate:                     ");
   lcd.setCursor(11, 1);
-  lcd.print(pox.getHeartRate());
+  lcd.print(heartRate);
   delay(1000);
 
 
@@ -56,12 +46,3 @@ void loop()
 
   LowPower.idle();
 }
-
-void msg()
-{
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Just woke up.");
-}
-
-
