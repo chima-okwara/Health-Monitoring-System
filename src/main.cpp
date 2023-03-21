@@ -9,6 +9,12 @@
 void setup();
 void loop();
 double heartRate (0.0), dist (0.0);
+
+PulseSensor pulse(pulse_sensor);
+
+LiquidCrystal lcd (PC14, PC15, PA0, PA1, PA2, PA3);
+
+HCSR04 ultra (PB0, PB1);
 //PulseOximeter pox;
 
 void setup()

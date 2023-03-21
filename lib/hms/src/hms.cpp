@@ -6,13 +6,6 @@
 #include "hms.hpp"
 #include <pulseSensor.h>
 
-PulseSensor pulse(pulse_sensor);
-
-LiquidCrystal lcd (PC14, PC15, PA0, PA1, PA2, PA3);
-
-HCSR04 ultra (PB0, PB1);
-
-
 void wakeUpAction()
 {
   lcd.clear();

@@ -5,8 +5,8 @@
 #include <Wire.h>
 #include <HCSR04.h>
 #include <STM32LowPower.h>
-#include "hms.hpp"
 #include <pulseSensor.h>
+#include <xlwg.hpp>
 
 #define sleepBtn PB12
 #define pulse_sensor PA5
@@ -20,6 +20,7 @@ extern HCSR04 ultra;
 extern double dist;
 extern double heartRate;
 extern PulseSensor pulse;
+//extern xlwg idGen;
 
 
 
@@ -27,6 +28,8 @@ void hms_init();
 void msg(void);
 void setup();
 void loop();
+
+
 
 #endif
 
