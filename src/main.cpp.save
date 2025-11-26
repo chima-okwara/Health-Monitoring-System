@@ -1,0 +1,52 @@
+#include <Arduino.h>
+#include <LiquidCrystal.h>
+#include <Wire.h>
+#include <HCSR04.h>
+#include <STM32LowPower.h>
+#include "hms.hpp"
+#include <pulseSensor.h>
+
+void setup();
+void loop();
+extern PulseSensor pulse;
+double heartRate 
+
+//PulseOximeter pox;
+
+float dist;
+
+void setup()
+{
+  hms_init();
+}
+
+
+void loop()
+{
+  delay(1000);
+  dist = ultra.getDistcm();
+  lcd.setCursor(0, 0);
+  lcd.print("Distance:                  ");
+  lcd.setCursor(10, 0);
+  lcd.print(dist);
+  delay(1000);
+
+  lcd.setCursor(0, 1);
+  heartRate = pulse.read();
+
+  lcd.print("Heart Rate:                     ");
+  lcd.setCursor(11, 1);
+  lcd.print(heartRate);
+  delay(1000);
+
+
+  lcd.clear();
+  delay(500);
+  lcd.home();
+  lcd.print("Going to sleep...");
+  delay(2000);
+
+  lcd.clear();
+
+  LowPower.idle();
+}

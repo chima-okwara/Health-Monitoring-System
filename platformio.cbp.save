@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="hms" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<MakeCommands>
+			<Build command="/home/chima/.local/bin/pio -f -c codeblocks run" />
+			<CompileFile command="/home/chima/.local/bin/pio -f -c codeblocks run" />
+			<Clean command="/home/chima/.local/bin/pio -f -c codeblocks run -t clean" />
+			<DistClean command="/home/chima/.local/bin/pio -f -c codeblocks run -t clean" />
+			<AskRebuildNeeded command="1" />
+			<SilentBuild command="/home/chima/.local/bin/pio -f -c codeblocks run &gt; $(CMD_NULL)" />
+		</MakeCommands>
+		<Build>
+			<Target title="Debug">
+				<Option type="4" />
+				<Option compiler="gcc" />
+				<Option parameters="-f -c codeblocks run -t upload" />
+				<Option host_application="/home/chima/.local/bin/pio" />
+				<Option run_host_application_in_terminal="1" />
+				<MakeCommands>
+					<Build command="/home/chima/.local/bin/pio -f -c codeblocks run" />
+					<CompileFile command="/home/chima/.local/bin/pio -f -c codeblocks run" />
+					<Clean command="/home/chima/.local/bin/pio -f -c codeblocks run -t clean" />
+					<DistClean command="/home/chima/.local/bin/pio -f -c codeblocks run -t clean" />
+					<AskRebuildNeeded command="1" />
+					<SilentBuild command="/home/chima/.local/bin/pio -f -c codeblocks run &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release">
+				<Option type="4" />
+				<Option compiler="gcc" />
+				<Option parameters="-f -c codeblocks run -t upload" />
+				<Option host_application="/home/chima/.local/bin/pio" />
+				<Option run_host_application_in_terminal="1" />
+				<MakeCommands>
+					<Build command="/home/chima/.local/bin/pio -f -c codeblocks run" />
+					<CompileFile command="/home/chima/.local/bin/pio -f -c codeblocks run" />
+					<Clean command="/home/chima/.local/bin/pio -f -c codeblocks run -t clean" />
+					<DistClean command="/home/chima/.local/bin/pio -f -c codeblocks run -t clean" />
+					<AskRebuildNeeded command="1" />
+					<SilentBuild command="/home/chima/.local/bin/pio -f -c codeblocks run &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-DPLATFORMIO=60105" />
+			<Add option="-DSTM32F4xx" />
+			<Add option="-DSTM32F401xC" />
+			<Add option="-DARDUINO=10808" />
+			<Add option="-DARDUINO_ARCH_STM32" />
+			<Add option="-DARDUINO_BLACKPILL_F401CC" />
+			<Add option='-DBOARD_NAME=&quot;BLACKPILL_F401CC&quot;' />
+			<Add option="-DHAL_UART_MODULE_ENABLED" />
+			<Add option="-DUSE_FULL_LL_DRIVER" />
+			<Add option='-DVARIANT_H=&quot;variant_BLACKPILL_F401CC.h&quot;' />
+			<Add option="-DCUSTOM_PERIPHERAL_PINS" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/hms/include" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/hms/src" />
+			<Add directory="/home/chima/.platformio/lib/LCD" />
+			<Add directory="/home/chima/.platformio/lib/LCD/utility" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/Wire/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/avr" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/LL" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/usb" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/OpenAMP" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/usb/hid" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/usb/cdc" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Drivers/STM32F4xx_HAL_Driver/Inc" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Drivers/STM32F4xx_HAL_Driver/Src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/STM32F4xx" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Middlewares/ST/STM32_USB_Device_Library/Core/Inc" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Middlewares/ST/STM32_USB_Device_Library/Core/Src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Middlewares/OpenAMP" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Middlewares/OpenAMP/open-amp/lib/include" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Middlewares/OpenAMP/libmetal/lib/include" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Middlewares/OpenAMP/virtual_driver" />
+			<Add directory="/home/chima/.platformio/packages/framework-cmsis/CMSIS/Core/Include" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Drivers/CMSIS/Device/ST/STM32F4xx/Include" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/gcc" />
+			<Add directory="/home/chima/.platformio/packages/framework-cmsis/CMSIS/DSP/Include" />
+			<Add directory="/home/chima/.platformio/packages/framework-cmsis/CMSIS/DSP/PrivateInclude" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/variants/STM32F4xx/F401CC(F-U-Y)_F401C(B-D-E)(U-Y)" />
+			<Add directory="/home/chima/.platformio/lib/Adafruit_FONA-master" />
+			<Add directory="/home/chima/.platformio/lib/Arduino-LiquidCrystal-I2C-library" />
+			<Add directory="/home/chima/.platformio/lib/FourLetterWord-master" />
+			<Add directory="/home/chima/.platformio/lib/FreqMeasure" />
+			<Add directory="/home/chima/.platformio/lib/FreqReader/src" />
+			<Add directory="/home/chima/.platformio/lib/HCSR04_ultrasonic_sensor-2.0.3/src" />
+			<Add directory="/home/chima/.platformio/lib/ITEADLIBArduinoNextionmaster" />
+			<Add directory="/home/chima/.platformio/lib/JeeH" />
+			<Add directory="/home/chima/.platformio/lib/Keypad/src" />
+			<Add directory="/home/chima/.platformio/lib/Low-Power-master" />
+			<Add directory="/home/chima/.platformio/lib/MFRC522master" />
+			<Add directory="/home/chima/.platformio/lib/Morse-Code" />
+			<Add directory="/home/chima/.platformio/lib/RadioHead" />
+			<Add directory="/home/chima/.platformio/lib/SevSeg" />
+			<Add directory="/home/chima/.platformio/lib/Shellminator/src" />
+			<Add directory="/home/chima/.platformio/lib/Stepper-master/src" />
+			<Add directory="/home/chima/.platformio/lib/analogueFreqReader/src" />
+			<Add directory="/home/chima/.platformio/lib/arduino-plotter/src" />
+			<Add directory="/home/chima/.platformio/lib/arduino-timer/src" />
+			<Add directory="/home/chima/.platformio/lib/atmega-timers-master" />
+			<Add directory="/home/chima/.platformio/lib/k2" />
+			<Add directory="/home/chima/.platformio/lib/libb" />
+			<Add directory="/home/chima/.platformio/lib/morseCode/src" />
+			<Add directory="/home/chima/.platformio/lib/phone" />
+			<Add directory="/home/chima/.platformio/lib/pincontrol/src" />
+			<Add directory="/home/chima/.platformio/lib/sensors/src" />
+			<Add directory="/home/chima/.platformio/lib/serLib" />
+			<Add directory="/home/chima/.platformio/lib/xlwg" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/CMSIS_DSP/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/EEPROM/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/IWatchdog/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/JeeH" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/Keyboard/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/Mouse/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/RGB_LED_TLC59731/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SPI/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/Servo/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SoftwareSerial/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SrcWrapper/src" />
+			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include/c++/9.2.1" />
+			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include/c++/9.2.1/arm-none-eabi" />
+			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/lib/gcc/arm-none-eabi/9.2.1/include" />
+			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/lib/gcc/arm-none-eabi/9.2.1/include-fixed" />
+			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include" />
+		</Compiler>
+		<Unit filename="lib/hms/src/hms.cpp" />
+		<Unit filename="lib/hms/src/hms.hpp" />
+		<Unit filename="src/main.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

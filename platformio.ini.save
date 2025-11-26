@@ -1,0 +1,6 @@
+[env:blackpill]
+platform = ststm32
+board = genericSTM32F401CD
+;board = blackpill
+framework = arduino
+upload_protocol = serial
