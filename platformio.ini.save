@@ -1,6 +1,6 @@
-[env:blackpill]
+[env:bluepill_ch32f103]
 platform = ststm32
-board = genericSTM32F401CD
-;board = blackpill
+board = bluepill_f103c8
+;board = blackpill_f401cc
 framework = arduino
 upload_protocol = serial

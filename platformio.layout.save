@@ -2,5 +2,100 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<EditorTabsLayout layout="@layout2|name=dummy;caption=;state=2098174;dir=3;layer=0;row=0;pos=0;prop=100000;bestw=535;besth=336;minw=535;minh=336;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(5,0,0)=202|" />
+	<File name="lib/elapsedMillis/src/elapsedMillis.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="21" />
+		</Cursor>
+		<Folding>
+			<Collapse line="34" />
+			<Collapse line="57" />
+			<Collapse line="80" />
+		</Folding>
+	</File>
+	<File name="lib/Arduino-MAX30100/examples/MAX30100_Minimal/MAX30100_Minimal.ino" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="45" />
+		</Cursor>
+	</File>
+	<File name="max30100_oxullo_troubleshooting_test" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="560" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="simTestCode" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="lib/Keypad-3.1.1/examples/CustomKeypad/CustomKeypad.ino" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="lib/hms/src/hms.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11580" topLine="544" />
+		</Cursor>
+	</File>
+	<File name="lib/Keypad-3.1.1/examples/EventKeypad/EventKeypad.ino" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1422" topLine="48" />
+		</Cursor>
+	</File>
+	<File name="18b20_test_code" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="732" topLine="18" />
+		</Cursor>
+	</File>
+	<File name="lib/hms/src/hms.hpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3326" topLine="93" />
+		</Cursor>
+	</File>
+	<File name="lib/HX711_ADC-master/src/HX711_ADC.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2380" topLine="71" />
+		</Cursor>
+	</File>
+	<File name="lib/Low_Power/examples/ExternalWakeup/ExternalWakeup.ino" open="1" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="lib/Keypad-3.1.1/examples/HelloKeypad/HelloKeypad.ino" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="573" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="lib/Keypad-3.1.1/src/Keypad.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6808" topLine="228" />
+		</Cursor>
+	</File>
+	<File name="lib/HX711_ADC-master/examples/Calibration/Calibration.ino" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2331" topLine="114" />
+		</Cursor>
+	</File>
+	<File name="src/main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2694" topLine="110" />
+		</Cursor>
+	</File>
+	<File name="hcsr04TestCode" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="15" />
+		</Cursor>
+	</File>
+	<File name="lib/Keypad-3.1.1/src/Keypad.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2866" topLine="71" />
+		</Cursor>
+	</File>
+	<File name="hx711TestCode" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="805" topLine="81" />
+		</Cursor>
+	</File>
+	<EditorTabsLayout layout="db0ec130672553ea0048b90a00000002=0;Health-Monitoring-System:src/main.cpp,*1;Health-Monitoring-System:lib/hms/src/hms.hpp,2;Health-Monitoring-System:lib/hms/src/hms.cpp,3;Health-Monitoring-System:lib/Low_Power/examples/ExternalWakeup/ExternalWakeup.ino@layout2|name=dummy;caption=;state=2098174;dir=3;layer=0;row=0;pos=0;prop=100000;bestw=535;besth=222;minw=535;minh=222;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|name=db0ec130672553ea0048b90a00000002;caption=;state=2098172;dir=5;layer=0;row=0;pos=0;prop=100000;bestw=200;besth=200;minw=-1;minh=-1;maxw=-1;maxh=-1;floatx=-1;floaty=-1;floatw=-1;floath=-1|dock_size(5,0,0)=202|" />
 </CodeBlocks_layout_file>

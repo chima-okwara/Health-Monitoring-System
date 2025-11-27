@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="hms_2025" />
+		<Option title="Health-Monitoring-System" />
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
@@ -47,30 +47,40 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-DPLATFORMIO=60118" />
-			<Add option="-DSTM32F1" />
+			<Add option="-DPLATFORMIO=60116" />
 			<Add option="-DSTM32F103xB" />
+			<Add option="-DSTM32F1" />
 			<Add option="-DSTM32F1xx" />
 			<Add option="-DARDUINO=10808" />
 			<Add option="-DARDUINO_ARCH_STM32" />
 			<Add option="-DNDEBUG" />
-			<Add option="-DARDUINO_BLUEPILL_F103C8" />
-			<Add option='-DBOARD_NAME=&quot;BLUEPILL_F103C8&quot;' />
+			<Add option="-DARDUINO_GENERIC_F103C8TX" />
+			<Add option='-DBOARD_NAME=&quot;GENERIC_F103C8TX&quot;' />
 			<Add option="-DHAL_UART_MODULE_ENABLED" />
-			<Add option="-DUSE_HAL_DRIVER" />
 			<Add option="-DUSE_FULL_LL_DRIVER" />
-			<Add option='-DVARIANT_H=&quot;variant_PILL_F103Cx.h&quot;' />
+			<Add option='-DVARIANT_H=&quot;variant_generic.h&quot;' />
 			<Add option="-DVECT_TAB_OFFSET=0x0" />
-			<Add directory="/home/chima/Documents/PlatformIO/Projects/hms_2025/include" />
-			<Add directory="/home/chima/Documents/PlatformIO/Projects/hms_2025/src" />
-			<Add directory="/home/chima/Documents/PlatformIO/Projects/hms_2025/lib/LiquidCrystal_I2C-1.1.2" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/hms/src" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SoftwareSerial/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/Low_Power/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/STM32RTC/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/Arduino-MAX30100/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/LCD/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/Wire/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/Keypad-3.1.1/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/HX711_ADC-master/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/HCSR04/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/Arduino-Temperature-Control-Library-master/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/OneWire-master/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/.pio/libdeps/bluepill_ch32f103/OneWire" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/avr" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SrcWrapper/inc" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SrcWrapper/inc/LL" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/USBDevice/inc" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/VirtIO/inc" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/LL" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/usb" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/OpenAMP" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/usb/hid" />
+			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino/stm32/usb/cdc" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Drivers/STM32F1xx_HAL_Driver/Inc" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/Drivers/STM32F1xx_HAL_Driver/Src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/system/STM32F1xx" />
@@ -87,7 +97,9 @@
 			<Add directory="/home/chima/.platformio/packages/framework-cmsis/CMSIS/DSP/PrivateInclude" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/cores/arduino" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/variants/STM32F1xx/F103C8T_F103CB(T-U)" />
-			<Add directory="/home/chima/Documents/PlatformIO/Projects/hms_2025/lib/SparkFun_MAX3010x_Sensor_Library-master/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/Adafruit_FONA-master" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/LiquidCrystal_I2C-1.1.2/src" />
+			<Add directory="/home/chima/Documents/PlatformIO/Projects/HMS/code/Health-Monitoring-System/lib/xlwg/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/CMSIS_DSP/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/EEPROM/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/IWatchdog/src" />
@@ -96,17 +108,48 @@
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/RGB_LED_TLC59731/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SPI/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/Servo/src" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SoftwareSerial/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SrcWrapper/src" />
 			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/SubGhz/src" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/USBDevice/src" />
-			<Add directory="/home/chima/.platformio/packages/framework-arduinoststm32/libraries/VirtIO/src" />
 			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include/c++/12.3.1" />
 			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include/c++/12.3.1/arm-none-eabi" />
-			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/lib/gcc/arm-none-eabi/12.3.1/include-fixed" />
 			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/lib/gcc/arm-none-eabi/12.3.1/include" />
+			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/lib/gcc/arm-none-eabi/12.3.1/include-fixed" />
 			<Add directory="/home/chima/.platformio/packages/toolchain-gccarmnoneeabi/arm-none-eabi/include" />
 		</Compiler>
+		<Unit filename="18b20_test_code" />
+		<Unit filename="actualCode" />
+		<Unit filename="hcsr04TestCode" />
+		<Unit filename="hx711TestCode" />
+		<Unit filename="include/filters.h" />
+		<Unit filename="include/hms_defs.h" />
+		<Unit filename="lib/Arduino-MAX30100/examples/MAX30100_Debug/MAX30100_Debug.ino" />
+		<Unit filename="lib/Arduino-MAX30100/examples/MAX30100_Minimal/MAX30100_Minimal.ino" />
+		<Unit filename="lib/Arduino-MAX30100/examples/MAX30100_RawData/MAX30100_RawData.ino" />
+		<Unit filename="lib/Arduino-MAX30100/examples/MAX30100_Tester/MAX30100_Tester.ino" />
+		<Unit filename="lib/Arduino-MAX30100/src/MAX30100.cpp" />
+		<Unit filename="lib/Arduino-MAX30100/src/MAX30100_BeatDetector.cpp" />
+		<Unit filename="lib/Arduino-MAX30100/src/MAX30100_PulseOximeter.cpp" />
+		<Unit filename="lib/Arduino-MAX30100/src/MAX30100_SpO2Calculator.cpp" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Alarm/Alarm.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/AlarmHandler/AlarmHandler.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/ExternalPullup/ExternalPullup.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Multibus_simple/Multibus_simple.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Multiple/Multiple.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/SaveRecallScratchPad/SaveRecallScratchPad.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/SetUserData/SetUserData.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Simple/Simple.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Single/Single.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Tester/Tester.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/Timing/Timing.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/TwoPin_DS18B20/TwoPin_DS18B20.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/UserDataDemo/UserDataDemo.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/UserDataWriteBatch/UserDataWriteBatch.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/WaitForConversion/WaitForConversion.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/WaitForConversion2/WaitForConversion2.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/oneWireSearch/oneWireSearch.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/examples/readPowerSupply/readPowerSupply.ino" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/src/DallasTemperature.cpp" />
+		<Unit filename="lib/Arduino-Temperature-Control-Library-master/src/DallasTemperature.h" />
 		<Unit filename="lib/DFRobot_MAX30102-master/src/DFRobot_MAX30102.cpp" />
 		<Unit filename="lib/DFRobot_MAX30102-master/src/DFRobot_MAX30102.h" />
 		<Unit filename="lib/DFRobot_MAX30102-master/src/PBA/License.h" />
@@ -115,16 +158,71 @@
 		<Unit filename="lib/DFRobot_MAX30102-master/src/SPO2/License.h" />
 		<Unit filename="lib/DFRobot_MAX30102-master/src/SPO2/algorithm.cpp" />
 		<Unit filename="lib/DFRobot_MAX30102-master/src/SPO2/algorithm.h" />
+		<Unit filename="lib/HCSR04/examples/simple/simple.ino" />
+		<Unit filename="lib/HCSR04/examples/temperature/temperature.ino" />
+		<Unit filename="lib/HCSR04/src/HCSR04.cpp" />
+		<Unit filename="lib/HCSR04/src/HCSR04.h" />
+		<Unit filename="lib/HX711_ADC-master/examples/Calibration/Calibration.ino" />
+		<Unit filename="lib/HX711_ADC-master/examples/Persistent_zero_offset/Persistent_zero_offset.ino" />
+		<Unit filename="lib/HX711_ADC-master/examples/Read_1x_load_cell/Read_1x_load_cell.ino" />
+		<Unit filename="lib/HX711_ADC-master/examples/Read_1x_load_cell_interrupt_driven/Read_1x_load_cell_interrupt_driven.ino" />
+		<Unit filename="lib/HX711_ADC-master/examples/Read_2x_load_cell/Read_2x_load_cell.ino" />
+		<Unit filename="lib/HX711_ADC-master/examples/Testing/Testing.ino" />
+		<Unit filename="lib/HX711_ADC-master/src/HX711_ADC.cpp" />
+		<Unit filename="lib/HX711_ADC-master/src/HX711_ADC.h" />
+		<Unit filename="lib/HX711_ADC-master/src/config.h" />
+		<Unit filename="lib/Keypad-3.1.1/examples/CustomKeypad/CustomKeypad.ino" />
+		<Unit filename="lib/Keypad-3.1.1/examples/DynamicKeypad/DynamicKeypad.ino" />
+		<Unit filename="lib/Keypad-3.1.1/examples/EventKeypad/EventKeypad.ino" />
+		<Unit filename="lib/Keypad-3.1.1/examples/HelloKeypad/HelloKeypad.ino" />
+		<Unit filename="lib/Keypad-3.1.1/examples/HelloKeypad3/HelloKeypad3.ino" />
+		<Unit filename="lib/Keypad-3.1.1/examples/MultiKey/MultiKey.ino" />
+		<Unit filename="lib/Keypad-3.1.1/examples/loopCounter/loopCounter.ino" />
 		<Unit filename="lib/Keypad-3.1.1/src/Key.cpp" />
 		<Unit filename="lib/Keypad-3.1.1/src/Key.h" />
 		<Unit filename="lib/Keypad-3.1.1/src/Keypad.cpp" />
 		<Unit filename="lib/Keypad-3.1.1/src/Keypad.h" />
-		<Unit filename="lib/LiquidCrystal_I2C-1.1.2/LiquidCrystal_I2C.cpp" />
-		<Unit filename="lib/LiquidCrystal_I2C-1.1.2/LiquidCrystal_I2C.h" />
-		<Unit filename="lib/hms/hms.cpp" />
-		<Unit filename="lib/hms/hms.h" />
+		<Unit filename="lib/LiquidCrystal_I2C-1.1.2/examples/HelloWorld/HelloWorld.ino" />
+		<Unit filename="lib/LiquidCrystal_I2C-1.1.2/examples/SerialDisplay/SerialDisplay.ino" />
+		<Unit filename="lib/LiquidCrystal_I2C-1.1.2/src/LiquidCrystal_I2C.cpp" />
+		<Unit filename="lib/LiquidCrystal_I2C-1.1.2/src/LiquidCrystal_I2C.h" />
+		<Unit filename="lib/Low_Power/examples/AlarmTimedWakeup/AlarmTimedWakeup.ino" />
+		<Unit filename="lib/Low_Power/examples/ExternalWakeup/ExternalWakeup.ino" />
+		<Unit filename="lib/Low_Power/examples/SerialDeepSleep/SerialDeepSleep.ino" />
+		<Unit filename="lib/Low_Power/examples/TimedWakeup/TimedWakeup.ino" />
+		<Unit filename="lib/Low_Power/src/STM32LowPower.cpp" />
+		<Unit filename="lib/Low_Power/src/STM32LowPower.h" />
+		<Unit filename="lib/Low_Power/src/low_power.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/Low_Power/src/low_power.h" />
+		<Unit filename="lib/OneWire-master/examples/DS18x20_Temperature/DS18x20_Temperature.ino" />
+		<Unit filename="lib/OneWire-master/examples/DS2408_Switch/DS2408_Switch.ino" />
+		<Unit filename="lib/OneWire-master/examples/DS250x_PROM/DS250x_PROM.ino" />
+		<Unit filename="lib/OneWire-master/src/OneWire.cpp" />
+		<Unit filename="lib/OneWire-master/src/OneWire.h" />
+		<Unit filename="lib/OneWire-master/util/OneWire_direct_gpio.h" />
+		<Unit filename="lib/OneWire-master/util/OneWire_direct_regtype.h" />
+		<Unit filename="lib/STM32RTC/src/STM32RTC.cpp" />
+		<Unit filename="lib/STM32RTC/src/STM32RTC.h" />
+		<Unit filename="lib/STM32RTC/src/rtc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/STM32RTC/src/rtc.h" />
+		<Unit filename="lib/eichen_lib/src/eichen_lib.cpp" />
+		<Unit filename="lib/eichen_lib/src/eichen_lib.h" />
+		<Unit filename="lib/elapsedMillis/src/elapsedMillis.h" />
+		<Unit filename="lib/hms/src/hms.cpp" />
+		<Unit filename="lib/hms/src/hms.hpp" />
+		<Unit filename="lib/xlwg/src/xlwg.cpp" />
+		<Unit filename="lib/xlwg/src/xlwg.hpp" />
+		<Unit filename="lib/xlwg/src/xlwgDefinitions.hpp" />
+		<Unit filename="max30100_oxullo_troubleshooting_test" />
+		<Unit filename="max30100_test_code_new_lib" />
 		<Unit filename="platformio.ini" />
+		<Unit filename="simTestCode" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/main.cpp.save" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

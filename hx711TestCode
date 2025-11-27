@@ -1,0 +1,159 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       hms.hpp
+//*FILE DESC:       Main source file for hms project.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <hms.hpp>
+
+elapsedMillis dispTime;
+
+void calibrate();
+
+char keymap [4] [4] =
+{
+    { '1', '2', '3', 'A' },
+    { '4', '5', '6', 'B' },
+    { '7', '8', '9', 'C' },
+    { '*', '0', '#', 'D' }
+};
+
+uint8_t cols [4] = { C4, C3, C2, C1 },
+        rows [4] = { R4, R3, R2, R1 };
+Keypad keypad (makeKeymap(keymap), rows, cols, 4, 4);
+
+//HX711 constructor:
+HX711_ADC LoadCell(DO, SCK);
+unsigned long t = 0;
+LiquidCrystal_I2C lcd (0x27, 20, 4);
+void setup()
+{
+  lcdInit();
+  LoadCell.begin();
+
+  LoadCell.start(2000, true);
+
+  lcd.clear();
+  lcd.home();
+  lcd.print("HX711 TEST->");
+  if (LoadCell.getTareTimeoutFlag() || LoadCell.getSignalTimeoutFlag())
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("Error. Check wiring");
+    delay(2000);
+    lcd.setCursor(0, 2);
+    lcd.print("and restart.");
+    while (1);
+  }
+
+  else
+  {
+    LoadCell.setCalFactor(1.0); // user set calibration value (float), initial value 1.0 may be used for this sketch
+    lcd.setCursor(0, 1);
+    lcd.print("Setup complete.");
+    delay(1000);
+  }
+
+  while (!LoadCell.update());
+  calibrate(); //start calibration procedure
+
+  lcd.clear();
+
+  lcd.home();
+  lcd.print("Display test values:");
+}
+
+void loop()
+{
+  static bool newDataReady = false;
+
+  // check for new data/start next conversion:
+  if (LoadCell.update())
+    newDataReady = true;
+
+  // get smoothed value from the dataset:
+  if (newDataReady)
+  {
+    if (dispTime > 1000)
+    {
+      float i = LoadCell.getData();
+      lcd.setCursor(0, 1);
+      lcd.print("Weight:        ");
+      lcd.setCursor(8, 1);
+      lcd.print(i);
+      newDataReady = false;
+      dispTime = 0;
+    }
+  }
+}
+
+void calibrate()
+{
+  lcd.home();
+  lcd.print("HX711 calib.");
+  delay(1000);
+
+  lcd.setCursor(0, 1);
+  lcd.print("Remove load...");
+  delay(2000);
+  lcd.setCursor(0, 2);
+  lcd.print("Press any key.");
+  keypad.waitForKey();
+
+  LoadCell.tareNoDelay();
+  if(LoadCell.getTareStatus() == true)
+  {
+    lcd.setCursor(0, 2);
+    lcd.print(CLEAR);
+    lcd.setCursor(0, 2);
+    lcd.print("Tare complete");
+    delay(2000);
+  }
+
+  lcd.setCursor(0, 1);
+  lcd.print(CLEAR);
+  lcd.setCursor(0, 2);
+  lcd.print(CLEAR);
+
+  lcd.setCursor(0, 1);
+  lcd.print("Place load...");
+  lcd.setCursor(0, 2);
+  lcd.print("Enter mass: ");
+  delay(500);
+  lcd.setCursor(12, 2);
+
+  char c { };
+  String val { };
+
+  while(c != '#')
+  {
+    c = keypad.waitForKey();
+    lcd.print(c);
+    if(c == '#')
+        break;
+    val += c;
+  }
+
+
+
+  float known_mass = val.toFloat();
+
+  LoadCell.refreshDataSet(); //refresh the dataset to be sure that the known mass is measured correct
+  float newCalibrationValue = LoadCell.getNewCalibration(known_mass); //get the new calibration value
+
+  lcd.setCursor(0, 1);
+  lcd.print(CLEAR);
+  lcd.setCursor(0, 2);
+  lcd.print(CLEAR);
+
+  lcd.setCursor(0, 1);
+  lcd.print("Calib Val.: ");
+  lcd.print(newCalibrationValue);
+  lcd.setCursor(0, 2);
+  lcd.print("Press any key.");
+
+  keypad.waitForKey();
+}
+

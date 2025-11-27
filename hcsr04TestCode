@@ -1,0 +1,44 @@
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       main.cpp
+//*FILE DESC:       Main source file for NL_HMS.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <Arduino.h>
+#include "hms.hpp"
+
+
+LiquidCrystal_I2C lcd (0x27, 20, 4);
+HCSR04 ultra (TRIG, ECHO);
+elapsedMillis displayTime;
+
+void setup()
+{
+        lcdInit();
+
+        lcd.clear();
+        lcd.home();
+        lcd.print("NL_HMS_076");
+        lcd.setCursor(0, 1);
+        lcd.print("Ultrasonic Sensor");
+        lcd.setCursor(0, 2);
+        lcd.print("Test.");
+        delay(2000);
+        lcd.setCursor(0, 3);
+        lcd.print("DISTANCE: ");
+}
+
+
+void loop()
+{
+    if(displayTime >= 1000)
+    {
+        displayTime = 0;
+        lcd.setCursor(10, 3);
+        lcd.print(ultra.getDistcm());
+        lcd.print("cm                       ");
+    }
+}

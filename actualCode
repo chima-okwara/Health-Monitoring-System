@@ -1,0 +1,1075 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       hms.cpp
+//*FILE DESC:       Implementation source file for hms library.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include "hms.hpp"
+
+elapsedMillis runTime;
+
+HMS::HMS(HCSR04 *ultra, PulseOximeter *pox, HX711_ADC *load, DallasTemperature *temp)
+            :ultrasonic(ultra), pox(pox), scale(load), tempSensor(temp)
+{
+
+}
+
+uint8_t HMS::init()
+{
+    lcdInit();
+    if(!pox->begin())
+        return (POXFAIL);
+
+    scale->begin();
+    scale->setReverseOutput();
+    scale->start(2000, true); //Starts hx711 module with a 2 second stabilising time, and tare set to true.
+
+    if(scale->getTareTimeoutFlag())
+        return (HX711FAIL);
+    else
+        scale->setCalFactor(LOADCELL_CAL);
+
+    tempSensor->begin();
+
+    LowPower.begin();
+    pinMode(SW1, INPUT_PULLUP);
+    LowPower.attachInterruptWakeup(SW1, wakeUpAction, RISING, SLEEP_MODE);
+
+    return(SUCCESS);
+}
+
+bool HMS::measureWeight()
+{
+    while(keypad.waitForKey() != 'D')
+    {
+        weight = getAvgWt(AVG);
+        displayWt(weight);
+        delay(100);
+    }
+
+
+  scale->tareNoDelay();
+
+  // check if last tare operation is complete:
+  return( scale->getTareStatus());
+}
+
+bool HMS::measureHeight()
+{
+    while(keypad.waitForKey() != 'D')
+    {
+        height = getAvgHt(AVG);
+        displayHt(height);
+        delay(100);
+    }
+
+    return (true);
+}
+
+bool HMS::measureHeartRate()
+{
+    while(keypad.waitForKey() != 'D')
+    {
+        pox->update();
+        heartRate = int (pox->getHeartRate());
+        updateMovingAverage(heartRate);
+
+        measureSpo2();
+
+        displayBPM(heartRate);
+        displaySpo2(spo2);
+        delay(100);
+    }
+
+    //TODO: Implement function to put MAX30100 TO SLEEP:
+    return (true);
+}
+
+bool HMS::measureSpo2()
+{
+    pox->update();
+    spo2 = pox->getSpO2();
+
+    return (true);
+}
+
+bool HMS::measureTemperature()
+{
+    while(keypad.waitForKey() != 'D')
+    {
+        tempSensor->requestTemperatures();
+        temperature = tempSensor->getTempCByIndex(0);
+        displayTemp(temperature);
+    }
+    return (true);
+}
+
+
+
+
+void wakeUpAction()
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Just woke up.");
+}
+
+void HMS::updateMovingAverage(int& val)
+{
+    static int heartRateIndex = 0;
+    static float heartRateBuffer[AVG]  = { };
+    heartRateBuffer[heartRateIndex] = val;
+    heartRateIndex = (heartRateIndex + 1) % AVG;
+
+    // Calculate the moving average
+    static int sum = 0;
+    for (int i = 0; i < AVG; ++i)
+    {
+        sum += heartRateBuffer[i];
+    }
+
+    val = sum / AVG;
+}
+
+const float& HMS::getAvgWt(uint8_t samples)
+{
+    static float avg = 0;
+    for(int i = 0; i < samples; ++i)
+    {
+        if(scale->update())
+        {
+            avg = avg + (scale->getData());
+        }
+    }
+    avg = avg / samples;
+    return (avg);
+}
+
+const float& HMS::getAvgHt(uint8_t samples)
+{
+    static float avg = 0;
+    for(int i = 0; i < samples; ++i)
+    {
+        avg = avg + ultrasonic->getDistcm();
+    }
+    avg = avg / samples;
+    return (avg);
+}
+
+
+
+
+MobileTerm::MobileTerm(HardwareSerial* ser)
+                :_sim(ser)
+{
+
+}
+
+uint8_t MobileTerm::init()
+{
+    pinMode(SIMRST, OUTPUT);
+    digitalWrite(SIMRST, HIGH);
+    delay(10);
+    digitalWrite(SIMRST, LOW);
+    delay(100);
+    digitalWrite(SIMRST, HIGH);
+
+    _sim->begin(9600);
+    delay(SIM_DELAY);
+
+
+    command = "AT";
+    _sim->println(command);
+    delay(10);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return SIMFAIL;
+
+    command = "AT+HTTPPARA=CID";
+    command += CID;
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return SIMFAIL;
+
+    command = "AT+HTTPPARA=URL,";
+    command += SERVER;
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return SIMFAIL;
+
+    command = "AT+HTTPPARA=UA,";
+    command += UA;
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return SIMFAIL;
+
+    command = "AT+HTTPPARA=CONTENT,";
+    command += CONTENT;
+    _sim->println(command);
+    reply = _sim->readString();
+
+     if(!checkReply("OK"))
+        return SIMFAIL;
+
+    return SUCCESS;
+}
+
+bool MobileTerm::checkReply(const char* check)
+{
+    String temp = { };
+    temp += command;
+    temp += "\r\r\n";
+    temp += check;
+    temp += "\r\n";
+
+    return ( (temp == reply) ? true : false ) ;
+}
+
+void MobileTerm::formatHTTPData()
+{
+    String httpRequestData {};
+    httpRequestData += "&apiKeyValue=";
+    httpRequestData += APIKEY;
+    httpRequestData += "&userID=";
+    httpRequestData += userID;
+    httpRequestData += "&heartRate=";
+    httpRequestData += String(hms.getHeartRate());
+    httpRequestData += "&spo2=";
+    httpRequestData += String(hms.getSpo2());
+    httpRequestData += "&temperature=";
+    httpRequestData += String(hms.getTemperature());
+    httpRequestData += "&height=";
+    httpRequestData += String(hms.getHeight());
+    httpRequestData += "&weight=";
+    httpRequestData += String(hms.getWeight());
+    httpRequestData += "&bmi=";
+    httpRequestData += String(hms.getBmi());
+    httpRequestData += "";
+
+
+    httpRequestData.toCharArray(httpData, sizeof(httpData));
+}
+
+bool MobileTerm::sendHTTPData()
+{
+    formatHTTPData();
+    command = "AT+HTTPPARA=USERDATA,";
+    command += httpData;
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    int sz = command.length();
+    sz -= 21;
+
+    String sz_str (sz, 10), tm_str (5000, 10);
+    command = "AT+HTTPDATA=";
+    command += sz_str;
+    command += ',';
+    command += tm_str;
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    command = "AT+HTTPACTION=1";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    return true;
+}
+
+bool MobileTerm::enableGPRS(const bool& val)
+{
+    bool state = false;
+    switch(val)
+    {
+        default:
+        case true:
+        {
+            state = startGPRS();
+            break;
+        }
+
+        case false:
+        {
+            state = endGPRS();
+            break;
+        }
+    }
+
+    return state;
+}
+
+bool MobileTerm::startGPRS()
+{
+    //Disconnect all sockets
+    command = "AT+CIPSHUT";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("SHUT OK"))
+        return false;
+
+    command = "AT+CGATT=1";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //Set bearer profile
+    command = "AT+SAPBR=3,1,CONTYPE,GPRS";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //Set APN, USERNAME and PASSWORD
+    command = "AT+SAPBR=3,1,APN,";
+    command += APN;
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    command = "AT+SAPBR=3,1,USER,";
+    command += USERNM;
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    command = "AT+SAPBR=3,1,PWD,";
+    command += PASSWD;
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+
+    command = "AT+CSTT=";
+    command += APN;
+    command += ',';
+    command += USERNM;
+    command += ',';
+    command += PASSWD;
+
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //Open GPRS context
+    command = "AT+SAPBR=1,1";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //Bring up wireless connection
+    command = "AT+CIICR";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    return true;
+}
+
+bool MobileTerm::endGPRS()
+{
+
+    //Disconnect all sockets
+    command = "AT+CIPSHUT";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("SHUT OK"))
+        return false;
+
+    //Close GPRS context
+    command = "AT+SAPBR=0,1";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    command = "AT+CGATT=0";
+    _sim->println(command);
+    delay(SIM_DELAY);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    return true;
+}
+
+bool MobileTerm::checkDataBalance()
+{
+    runTime = 0;
+//Dial number routine:
+
+    //Disable showing <text> in response:
+    command = "ATX0";
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //Get and dial ussd code:
+    command = "ATD";
+    command += getUSSDCode();
+    command += ';';
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("CONNECT"))
+        return false;
+    //TA will enter data mode after dialling non-voice call number.
+
+    //Switch TA back to command mode.
+    command = "+++";
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //Disconnect Existing Connection:
+    command = "ATH";
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    //lcd.clear();
+//Forwarding text routine:
+    while(runTime < 10000) //Delay for 10s
+    {
+
+    }
+
+
+    command = "AT+CMSS=1,";
+    command += getPhoneNum();
+    _sim->println(command);
+    reply = _sim->readString();
+    if(!checkReply("OK"))
+        return false;
+
+    return true;
+}
+
+String MobileTerm::getPhoneNum()
+{
+    String number { };
+    char c { };
+    uint8_t cnt { };
+
+    lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Enter phone number: ");
+    lcd.setCursor(0, 2);
+
+    while(cnt < 11)
+    {
+        c = keypad.waitForKey();
+        lcd.print(c);
+        number += c;
+        ++cnt;
+    }
+
+    return number;
+}
+
+String MobileTerm::getUSSDCode()
+{
+    String code { };
+    char c { };
+
+    lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Enter USSD code: ");
+    lcd.setCursor(0, 2);
+
+    while(c != '#')
+    {
+        c = keypad.waitForKey();
+        lcd.print(c);
+        code += c;
+    }
+
+    return code;
+}
+
+void lcdInit()
+{
+    lcd.init();
+    lcd.backlight();
+    lcd.setBacklight(5);
+    lcd.clear();
+    lcd.home();
+    lcd.print("αϰ-Χιμα-Χυκυ");
+    delay(3000);
+    lcd.setCursor(0, 1);
+    lcd.print("NL_HMS_076");
+    delay(1000);
+
+    lcd.setCursor(0, 2);
+    lcd.print(CLEAR);
+    lcd.setCursor(0, 3);
+    lcd.print(CLEAR);
+    delay(500);
+
+    lcd.setCursor(0, 2);
+    lcd.print("Xommen Zzvildengrud");
+    lcd.setCursor(0, 3);
+    lcd.print("Sistyme Xhresch");
+    delay(2000);
+
+
+
+    lcd.setCursor(0, 2);
+    lcd.print(CLEAR);
+    lcd.setCursor(0, 3);
+    lcd.print(CLEAR);
+    delay(500);
+
+    lcd.setCursor(0, 2);
+    lcd.print("Human Health");
+    lcd.setCursor(0, 3);
+    lcd.print("Monitoring System");
+    delay(2000);
+
+    lcd.setCursor(0, 2);
+    lcd.print(CLEAR);
+    lcd.setCursor(0, 3);
+    lcd.print(CLEAR);
+    delay(500);
+
+    lcd.setCursor(0, 2);
+    lcd.print("Running SysInit-->");
+    lcd.setCursor(0, 3);
+    lcd.print("Please Wait.");
+    delay(2000);
+}
+
+void enterSleepMode()
+{
+    LowPower.sleep();
+}
+
+void displayWt(const float& weight)
+{
+    lcd.setCursor(13, 2);
+    lcd.print("Wt: ");
+    lcd.setCursor(17, 2);
+    lcd.print(weight, 0);
+//    lcd.print(" kg.");
+}
+
+void displayHt(const float& height)
+{
+    lcd.setCursor(0, 2);
+    lcd.print("Ht: ");
+    lcd.setCursor(4, 2);
+    lcd.print(height, 1);
+    lcd.print(" cm ");
+}
+
+void displayBPM(const int& hrt)
+{
+    lcd.setCursor(0, 0);
+    lcd.print("HtRt: ");
+    lcd.setCursor(6, 0);
+    lcd.print(hrt, 0);
+}
+
+void displayBMI(const float& bmi)
+{
+//    Underweight: BMI less than 18.5, Normal weight: BMI between 18.5 and 24.9;    Overweight: BMI between 25.0 and 29.9     Obese: BMI 30.0 or higher
+    lcd.setCursor(7, 2);
+    lcd.print("BMI: ");
+    lcd.setCursor(12, 2);
+    lcd.print(bmi, 2);
+    lcd.setCursor(0, 3);
+    lcd.print("Status: ");
+
+    if(bmi < 18.5)
+    {
+        lcd.print("Underweight.");
+    }
+    else if(bmi >= 18.5 && bmi <= 24.9)
+    {
+        lcd.print("Normal.");
+    }
+    else if(bmi >= 25 && bmi <= 29.9)
+    {
+        lcd.print("Overweight.");
+    }
+    else
+    {
+        lcd.print("Obese.");
+    }
+}
+
+void displaySpo2(const int& spo2)
+{
+    lcd.setCursor(13, 0);
+    lcd.print("S: ");
+    lcd.setCursor(16, 0);
+    lcd.print(spo2);
+}
+
+void displayTemp(const float& temp)
+{
+    lcd.setCursor(0, 2);
+    lcd.print("Te: ");
+    lcd.setCursor(4, 2);
+    lcd.print(temp, 0);
+    lcd.print(" *C");
+}
+
+void hmsFn()
+{
+    hmsFnBegin:
+    displayTime = 0;
+    lcd.clear();
+    lcd.home();
+
+    while(displayTime < 2000)
+        lcd.print("HMS Fn");
+
+    lcd.setCursor(0, 1);
+    lcd.print("Press key C");
+    lcd.setCursor(0, 2);
+    while(key != 'C')
+    {
+        key = keypad.waitForKey();
+        lcd.print(".");
+        displayTime = 0;
+        while(displayTime < 1000);
+
+        if(key == 'C')
+            break;
+    }
+
+    enterID:
+    lcd.clear();
+    lcd.home();
+    lcd.print("Enter ID:");
+    lcd.setCursor(0, 1);
+    int i = 0;
+    while(i < 6)
+    {
+        key = keypad.waitForKey();
+        if(key == '#')
+            break;
+
+        userID[i] = key;
+        ++i;
+        lcd.print(userID);
+    }
+
+    userID[6] = '\0';
+
+    displayTime = 0;
+    while(displayTime < 1000);
+
+    lcd.setCursor(0, 2);
+    lcd.print("Press any key");
+
+    key = keypad.waitForKey();
+
+    switch(key)
+    {
+        default:
+        case 'A':
+        case 'B':
+        {
+            break;
+        }
+
+        case 'C':
+        {
+            goto enterID;
+            break;
+        }
+
+        case 'D':
+        {
+            break;
+        }
+
+        case '#':
+        {
+            goto hmsFnBegin;
+            break;
+        }
+    }
+
+    measureHS:
+    lcd.clear();
+    lcd.home();
+    lcd.print("Place finger");
+    lcd.setCursor(0, 1);
+    lcd.print("on sensor.--->");
+    displayTime = 0;
+    while(displayTime < 1000);
+
+    lcd.setCursor(0, 2);
+    lcd.print("Press A");
+
+    while(key != 'A')
+        key = keypad.waitForKey();
+
+    hms.measureHeartRate();
+    hms.measureSpo2();
+
+    _htRt = hms.getHeartRate();
+    _spo2 = hms.getSpo2();
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Remove finger.");
+    displayTime = 0;
+    while(displayTime < 1000);
+
+    displayHS:
+    displayHt(_htRt);
+    displaySpo2(_spo2);
+    displayTime = 0;
+    while(displayTime < 2000);
+
+    lcd.clear();
+
+    lcd.home();
+    lcd.print("A=Continue|B=Restart");
+    lcd.setCursor(0, 1);
+    lcd.print("C=Display|D=Home");
+    lcd.setCursor(0, 2);
+    lcd.print("#=Measure Again.");
+
+    key = keypad.waitForKey();
+    switch(key)
+    {
+        case 'A':
+        break;
+
+        case 'B':
+            goto measureHS;
+            break;
+
+        case 'C':
+            goto displayHS;
+            break;
+
+        case 'D':
+            break;
+
+        case '#':
+            goto hmsFnBegin;
+
+        default:
+            goto displayHS;
+            break;
+    }
+
+    measureHW:
+    lcd.clear();
+    lcd.home();
+    lcd.print("Please stand");
+    lcd.setCursor(0, 1);
+    lcd.print("on platform.");
+    displayTime = 0;
+    while(displayTime < 1000);
+    lcd.setCursor(0, 2);
+    lcd.print("Press A");
+    key = keypad.getKey();
+    while(key != 'A')
+    {
+        key = keypad.getKey();
+        lcd.print('-');
+    }
+
+    hms.measureHeight();
+    hms.measureWeight();
+
+    displayHW:
+    wt = hms.getWeight();
+    ht = hms.getHeight();
+    _bmi = hms.getBmi();
+
+    displayWt(wt);
+    displayHt(ht);
+    displayBMI(_bmi);
+    displayTime = 0;
+    while(displayTime < 2000);
+
+    lcd.clear();
+
+    lcd.home();
+    lcd.print("A=Continue|B=Restart");
+    lcd.setCursor(0, 1);
+    lcd.print("C=Display|D=Home");
+    lcd.setCursor(0, 2);
+    lcd.print("#=Measure Again.");
+
+    key = keypad.waitForKey();
+    switch(key)
+    {
+        case 'A':
+        break;
+
+        case 'B':
+            goto measureHW;
+            break;
+
+        case 'C':
+            goto displayHW;
+            break;
+
+        case 'D':
+            break;
+
+        case '#':
+            goto hmsFnBegin;
+            break;
+
+        default:
+            goto displayHW;
+            break;
+    }
+
+    measureT:
+    lcd.clear();
+    lcd.home();
+    lcd.print("Place sensor ");
+    lcd.setCursor(0, 1);
+    lcd.print("under arm.");
+    displayTime = 0;
+    while(displayTime < 1000);
+    lcd.setCursor(0, 2);
+    lcd.print("Press A");
+
+    key = keypad.getKey();
+    while(key != 'A')
+    {
+        key = keypad.getKey();
+        lcd.print('-');
+    }
+
+    hms.measureTemperature();
+
+    displayT:
+    temp = hms.getTemperature();
+
+    displayTemp(temp);
+    displayTime = 0;
+    while(displayTime < 2000);
+
+    lcd.clear();
+
+    lcd.home();
+    lcd.print("A=Continue|B=Restart");
+    lcd.setCursor(0, 1);
+    lcd.print("C=Display|D=Home");
+    lcd.setCursor(0, 2);
+    lcd.print("#=Measure Again.");
+
+    key = keypad.waitForKey();
+    switch(key)
+    {
+        case 'A':
+        break;
+
+        case 'B':
+            goto measureT;
+            break;
+
+        case 'C':
+            goto displayT;
+            break;
+
+        case 'D':
+            break;
+
+        case '#':
+            goto hmsFnBegin;
+            break;
+
+        default:
+            goto displayT;
+            break;
+    }
+
+    dispAll:
+    lcd.clear();
+    lcd.home();
+    lcd.print("UserID: ");
+    lcd.print(userID);
+    displayTime = 0;
+    while(displayTime < 2000);
+
+    displayBPM(_htRt);
+    displaySpo2(_spo2);
+    displayTime = 0;
+    while(displayTime < 2000);
+    displayHt(ht);
+    displayWt(wt);
+    displayTime = 0;
+    while(displayTime < 2000);
+    displayBMI(_bmi);
+    displayTime = 0;
+    while(displayTime < 2000);
+    displayTemp(temp);
+    displayTime = 0;
+    while(displayTime < 2000);
+
+    lcd.clear();
+
+    lcd.home();
+    lcd.print("A=Upload|B=Display");
+    lcd.setCursor(0, 1);
+    lcd.print("C=Display|");
+    lcd.setCursor(0, 2);
+    lcd.print("#=Restart Fn.");
+
+    key = keypad.waitForKey();
+    switch(key)
+    {
+        case 'A':
+        break;
+
+        case 'B':
+            goto dispAll;
+            break;
+
+        case 'C':
+            goto dispAll;
+            break;
+
+        case 'D':
+            break;
+
+        case '#':
+            goto hmsFnBegin;
+            break;
+
+        default:
+            goto displayT;
+            break;
+    }
+
+    upload:
+    if(!sim.sendHTTPData())
+    {
+        lcd.clear();
+        lcd.home();
+        lcd.print("Upload Fail!");
+        displayTime = 0;
+        while(displayTime < 2000);
+        lcd.clear();
+        lcd.home();
+
+        lcd.home();
+        lcd.print("A=Retry|");
+        lcd.setCursor(0, 1);
+        lcd.print("C=Continue|");
+        lcd.setCursor(0, 2);
+        lcd.print("#=Restart Fn.");
+
+        key = keypad.waitForKey();
+        switch(key)
+        {
+            case 'A':
+            goto upload;
+            break;
+
+            case 'B':
+                break;
+
+            case 'C':
+                break;
+
+            case 'D':
+                break;
+
+            case '#':
+                goto hmsFnBegin;
+                break;
+
+            default:
+                goto dispAll;
+                break;
+        }
+
+    }
+
+    else
+    {
+        lcd.clear();
+        lcd.home();
+        lcd.print("Uploaded!");
+        displayTime = 0;
+        while(displayTime < 1000);
+    }
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("HMS Fn Done.");
+    displayTime = 0;
+    while(displayTime < 1000);
+}
+
+
+void dataChkFn()
+{
+    lcd.clear();
+    lcd.home();
+    lcd.print("Check Balance Fn.");
+    displayTime = 0;
+    while(displayTime < 1000);
+
+    if(!sim.checkDataBalance())
+    {
+        lcd.clear();
+        lcd.home();
+        lcd.print("Failed");
+        displayTime = 0;
+        while(displayTime < 1000);
+    }
+
+    else
+    {
+        lcd.clear();
+        lcd.home();
+        lcd.print("Sent");
+        displayTime = 0;
+        while(displayTime < 1000);
+    }
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Check Balance Fn");
+    lcd.setCursor(0, 1);
+    lcd.print("done.");
+    displayTime = 0;
+    while(displayTime < 1000);
+}

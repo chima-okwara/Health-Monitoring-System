@@ -1,32 +1,199 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       hms.hpp
+//*FILE DESC:       Header source file for hms library.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
 #ifndef ___HMS___
 #define ___HMS___
 #include <Arduino.h>
-#include <LiquidCrystal.h>
+#include <HardwareSerial.h>
 #include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Keypad.h>
 #include <HCSR04.h>
+#include <HX711_ADC.h>
+#include <MAX30100_PulseOximeter.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <HardwareTimer.h>
+#include <WString.h>
+#include <elapsedMillis.h>
+#include <eichen_lib.h>
 #include <STM32LowPower.h>
-#include <pulseSensor.h>
-#include <xlwg.hpp>
+#include <../../../include/hms_defs.h>
 
-#define sleepBtn PB12
-#define pulse_sensor PA5
+//GPIO Pins:
+#define sleepBtn
+#define DO PB5
+#define SCK PB4
 #define led LED_BUILTIN
+#define TEMPSENSE PA1
+#define ECHO PA4
+#define TRIG PA5
+#define SW1 PA6
+#define SW2 PA7
+#define SIMRST PB1
+#define SIMRX PB10
+#define SIMTX PB11
+#define R1 PA11
+#define R2 PA10
+#define R3 PA9
+#define R4 PA8
+#define C1 PB15
+#define C2 PB14
+#define C3 PB13
+#define C4 PB12
 
+
+//Return values
+#define SUCCESS 0
+#define POXFAIL 1
+#define HX711FAIL 2
+#define TEMPSENSEFAIL 3
+#define SIMFAIL 4
+
+//Constants:
+#define REF_HEIGHT 40
+#define AVG 10
+#define SIM_DELAY 5000
+
+#define BLANK2 "  "
+#define BLANK3 "   "
+#define CLEAR "                    "
+
+
+#define PORT 80
+#define MTN_APN "web.gprs.mtnnigeria.et"
+#define AIRTEL_APN "internet.gprs.airtel.g"
+#define CONTENT_TYPE "application/x-www-form-urlencoded"
+#define TEXT_CONTENT_TYPE "text/plain"
+
+
+#ifndef SERVER
+    #define SERVER "www.norahlinks.com"
+#endif // SERVER
+
+#ifndef APIKEY
+    #define APIKEY "NL_HHMS_076"
+#endif // APIKEY
+
+//Attributes:
 typedef const uint8_t& pin_t;
 
-extern LiquidCrystal lcd;
-extern HCSR04 ultra;
-//extern PulseOximeter pox;
-extern double dist;
-extern double heartRate;
-extern PulseSensor pulse;
+extern elapsedMillis displayTime, runTime;
+extern OneWire oneWire;
+extern LiquidCrystal_I2C lcd;
+extern Keypad keypad;
+
+extern char httpData[100];
+extern HardwareSerial sim800l;
+
+extern char userID[7];
+extern char key;
+
+extern float wt, ht, temp, _bmi;
+extern int _spo2, _htRt;
+
+class HMS
+{
+public:
+    //Constructors:
+    HMS() = default;
+    HMS(HCSR04*, PulseOximeter*, HX711_ADC*, DallasTemperature*);
+
+    uint8_t init();
+    bool measureHeight();
+    bool measureWeight();
+    bool measureHeartRate();
+    bool measureSpo2();
+    bool measureTemperature();
+
+    const float &getWeight() { return (weight); }
+    const float &getHeight() { return (height); }
+    const float &getTemperature() { return (temperature); }
+    const float &getBmi() { return (bmi = (weight) / (height * height)); }
+    //    Underweight: BMI less than 18.5, Normal weight: BMI between 18.5 and 24.9;    Overweight: BMI between 25.0 and 29.9     Obese: BMI 30.0 or higher
+
+    const int &getSpo2() { return (spo2); }
+    const int &getHeartRate() { return (heartRate); }
 
 
 
-void hms_init();
-void msg(void);
+private:
+    //Modules:
+    HCSR04 *ultrasonic;
+    PulseOximeter *pox;
+    HX711_ADC *scale;
+    DallasTemperature *tempSensor;
+
+
+    //Variables:
+    float weight, height, temperature, bmi;
+    int spo2, heartRate;
+
+    //Methods:
+    void updateMovingAverage(int&);
+    const float &getAvgWt(uint8_t samples);
+    const float &getAvgHt(uint8_t samples);
+};
+
+
+class MobileTerm
+{
+public:
+    MobileTerm () = default;
+    MobileTerm (HardwareSerial*);
+
+    uint8_t init(void);
+    bool sendHTTPData(void);
+    bool enableGPRS(const bool&);
+    bool checkDataBalance();
+
+    const String& getReply() { return (reply); }
+
+private:
+    bool checkReply(const char*);
+    void formatHTTPData();
+    bool startGPRS();
+    bool endGPRS();
+    bool dialNum(String);
+
+    String getUSSDCode();
+    String getPhoneNum();
+
+    String command, reply;
+    HardwareSerial* _sim;
+    char httpData[250];
+};
+
+extern HMS hms;
+extern MobileTerm sim
+
 void setup();
 void loop();
+
+
+void lcdInit();
+void enterSleepMode();
+void wakeUpAction();
+void displayWt(const float&);
+void displayHt(const float&);
+void displayBPM(const int&);
+void displaySpo2(const int&);
+void displayTemp(const float&);
+void displayBMI(const float&);
+
+
+void hmsFn();
+void dataChkFn();
+
+
+
+
+
 
 
 

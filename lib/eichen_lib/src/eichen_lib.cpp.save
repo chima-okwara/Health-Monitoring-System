@@ -1,0 +1,78 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       eichen_lib.cpp
+//*FILE DESC:       Implementation file for eichen library.
+//*FILE VERSION:    0.1.1
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Wednesday, 14 July, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include <eichen_lib.h>
+
+float& readVoltage(const uint32_t& pin, const uint32_t& _min, const uint32_t& _max)
+{
+    value = 0;
+    actualVal = 0.0;
+    sum = 0.0;
+    avg = 0.0;
+    valueAverage = 0.0;
+
+    for(int i = 0; i < AVG; ++i)
+    {
+        average[i] = 0.0;
+        delayMicroseconds(1);
+    }
+
+    for(int i = 0; i < AVG; ++i)
+    {
+        value = analogRead(pin);
+        valueAverage = map(value, 0, 4095, _min, _max);
+        average[i] = valueAverage;
+        delayMicroseconds(10);
+    }
+
+    for(int i = 0; i < AVG; ++i)
+    {
+        sum = sum + average[i];
+        delayMicroseconds(10);
+    }
+    avg = sum / float(AVG);
+
+
+    return (avg);
+}
+
+void convToBase(float *_value)
+{
+        val = 0.0;
+        val = (*_value) / 1000.0;
+        *_value = val;
+}
+
+
+void convToMilli(float* _value)
+{
+    val = 0.0;
+    val = (*_value) * 1000.0;
+    *_value = val;
+}
+
+
+float& getBatPer(const float& batVoltage, const float& minVoltage = MinBatVoltage, const float& maxVoltage = MaxBatVoltage)
+{
+    val = 0.0;
+    val = ((batVoltage - minVoltage) / (maxVoltage - minVoltage) * 100);
+    constrain(val, 0, 100);
+    return (val);
+}
+
+template <typename T>
+    char intToChar(const T&)
+    {
+        
+    }
+
+int charToInt(const char& input)
+{
+    int result = input - '0'
+}

@@ -1,94 +1,177 @@
-#include <hms.h>
-#include <Keypad.h>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       hms.hpp
+//*FILE DESC:       Main source file for hms project.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <hms.hpp>
+elapsedMillis displayTime;
+elapsedSeconds _time = 0;
 
-String userID;
-int32_t heartRate;
-int32_t spo2;
-int32_t temperature;
-int32_t height;
-int32_t weight;
-int32_t bmi;
-
-int32_t postResponse;
-
-
-
-
+HCSR04 ultra (TRIG, ECHO);
+OneWire oneWire (TEMPSENSE);
+DallasTemperature tempSense(&oneWire);
 DFRobot_MAX30102 particleSensor;
-LiquidCrystal_I2C lcd(0x27, 20, 4);  // Adjust address if needed
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
 
-HMS hms(&particleSensor);
-// Variables for sensor data
+HardwareSerial sim800l (USART3);
+MobileTerm sim (&sim800l);
 
-const byte ROWS = 4; //four rows
-const byte COLS = 4; //four columns
-//define the cymbols on the buttons of the keypads
-char hexaKeys[ROWS][COLS] =
+HX711_ADC LoadCell (DO, SCK);
+
+HMS hms (&ultra, &particleSensor, &LoadCell, &tempSense);
+
+char key { }, userID[7] { }, httpData [50] { };
+
+char keymap [4] [4] =
 {
-  {'1','2','3','A'},
-  {'4','5','6','B'},
-  {'7','8','9','C'},
-  {'*','0','#','D'}
+    { '1', '2', '3', 'A' },
+    { '4', '5', '6', 'B' },
+    { '7', '8', '9', 'C' },
+    { '*', '0', '#', 'D' }
 };
 
-uint8_t rowPins[ROWS] = {PA8, PA9, PA10, PA11}; //connect to the row pinouts of the keypad
-uint8_t colPins[COLS] = {PB12, PB13, PB14, PB15}; //connect to the column pinouts of the keypad
+uint8_t cols [4] = { C4, C3, C2, C1 },
+        rows [4] = { R4, R3, R2, R1 };
+Keypad keypad (makeKeymap(keymap), rows, cols, 4, 4);
 
-//initialize an instance of class NewKeypad
-Keypad customKeypad = Keypad( makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+LiquidCrystal_I2C lcd (0x27, 20, 4);
+
+float wt { }, ht { }, temp { }, _bmi { };
+int32_t _spo2 { }, _htRt { };
 
 
 void setup()
 {
-  lcd.init();
-  lcd.backlight();
-  lcd.print("Initializing sensor");
+    uint8_t report = hms.init();
 
+    lcd.clear();
 
-  // Initialize LCD
-  char c;
-  lcd.home();
-  c = customKeypad.waitForKey();
-  lcd.print(c);
-
-  while(c != 'D')
-  {
-    c = customKeypad.waitForKey();
-    lcd.print(c);
-  }
-
-    if(hms.init() != initsuccess)
+    if(report != SUCCESS)
     {
-
-        if(hms.getInitStatus() == maxinitfail)
+        switch(report)
         {
+            case POXFAIL:
+            {
+                lcd.home();
+                lcd.print("MAX30100 error!");
+                delay(1000);
+                break;
+            }
 
-            lcd.clear();
-            lcd.home();
-            lcd.print("Max30102 Error!");
-            lcd.setCursor(0, 1);
-            lcd.print("Reset MCU");
-            while(1);
+            case HX711FAIL:
+            {
+                lcd.home();
+                lcd.print("HX711 error!");
+                delay(1000);
+                break;
+            }
+
+            case TEMPSENSEFAIL:
+            {
+                lcd.home();
+                lcd.print("DS18B20 error!");
+                delay(1000);
+                break;
+            }
+
+            default:
+            {
+                lcd.home();
+                lcd.print("Unkn error!");
+                delay(1000);
+                break;
+            }
         }
     }
 
-  lcd.clear();
-  lcd.print("Place finger on");
-  lcd.setCursor(0, 1);
-  lcd.print("sensor firmly");
-  delay(2000);
+    else
+    {
+        lcd.home();
+        lcd.print("Sensors Init!");
+        delay(1000);
+    }
+
+    report = sim.init();
+    if(report != SUCCESS)
+    {
+        lcd.home();
+        lcd.print("SIM800L Error!");
+        delay(1000);
+    }
+
+    else
+    {
+        lcd.home();
+        lcd.print("SIM800L Init!");
+        delay(1000);
+    }
 }
 
 void loop()
 {
-  // Get sensor data
-    readmax();
-    displaymax();
+    _time = 0;
+    lcd.clear();
+    lcd.home();
+    lcd.print("Press button.");
+    lcd.setCursor(0, 1);
+    lcd.print("A=HMS Fn|B=Chk Data");
+    lcd.setCursor(0, 2);
+    lcd.print("C=Print values");
+    key = '\0';
 
+    while(!key && _time < 10)
+    {
+        key = keypad.getKey();
+        if(key || _time >= 10)
+            break;
+    }
 
+    if(key)
+    {
+        _time = 0;
+        switch(key)
+        {
+            case 'A':
+            {
+                hmsFn();
+                break;
+            }
 
-  // Delay between readings
-  delay(500);  // 3-second delay matches sensor processing time
+            case 'B':
+            {
+                dataChkFn();
+                break;
+            }
+
+            case 'C':
+            {
+                break;
+            }
+
+            case 'D':
+            {
+                break;
+            }
+
+            case '#':
+            {
+                break;
+            }
+
+            default:
+            {
+                break;
+            }
+        }
+
+    }
+
+    if(_time >= 60)
+    {
+//        enterSleepMode();
+    }
 }
+
+

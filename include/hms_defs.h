@@ -1,0 +1,9 @@
+#define SERVER  "192.168.0.1"
+#define APIKEY  "NL776HMS"
+#define CID "****"
+#define UA APIKEY
+#define CONTENT CONTENT_TYPE
+#define APN MTN_APN
+#define USERNM 0
+#define PASSWD 0
+#define LOADCELL_CAL 33

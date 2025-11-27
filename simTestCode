@@ -1,0 +1,75 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       main.cpp
+//*FILE DESC:       Main source file for NL_HMS.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <Arduino.h>
+#include <HardwareSerial.h>
+#include <hms_defs.h>
+
+
+
+#include "hms.hpp"
+
+
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+//Attributes:
+HardwareSerial sim800l (USART3);
+
+
+void setup()
+{
+        lcdInit();
+
+        lcd.clear();
+        lcd.home();
+        lcd.print("NL_HMS_076 SIM test.");
+        delay(2000);
+
+
+        sim800l.begin(9600);
+        delay(500);
+
+        lcd.setCursor(0, 1);
+        lcd.print("Init SIM module.");
+
+        String command = "AT";
+        sim800l.println(command);
+        delay(10);
+        sim800l.readString();
+        sim800l.println(command);
+        String reply = sim800l.readString();
+        lcd.setCursor(0, 2);
+        lcd.print("Reply: ");
+        lcd.print(reply);
+        delay(2000);
+
+        lcd.setCursor(0, 3);
+        if(checkReply(command, reply, "OK"))
+        {
+            lcd.print("Success");
+            delay(1000);
+        }
+
+        else
+        {
+            lcd.print("Failed");
+            delay(1000);
+        }
+
+
+
+
+}
+
+
+void loop()
+{
+    lcd.clear();
+    lcd.home();
+    lcd.print("Hello world!");
+    delay(1000);
+}

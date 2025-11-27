@@ -1,0 +1,177 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       main.cpp
+//*FILE DESC:       Main source file for NL_HMS.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <Arduino.h>
+#include "hms.hpp"
+
+
+LiquidCrystal_I2C lcd (0x27, 20, 4);
+elapsedMillis displayTime;
+MAX30100 sensor;
+
+void setup()
+{
+    lcdInit();
+    lcd.clear();
+    lcd.home();
+    lcd.print("Initializing MAX30100..");
+    delay(1000);
+
+    if (!sensor.begin())
+    {
+        lcd.clear();
+        lcd.home();
+        lcd.print("Failed to initialise");
+
+        uint8_t partId = sensor.getPartId();
+        if (partId == 0xff)
+        {
+            lcd.setCursor(0, 1);
+            lcd.print("I2C error");
+        }
+
+        else
+        {
+            lcd.setCursor(0, 1);
+            lcd.print("Wrong part ID.");
+            lcd.setCursor(0 ,2);
+            lcd.print("Part ID: 0x");
+            lcd.print(partId, HEX);
+            lcd.setCursor(0, 3);
+            lcd.print("Expected: 0x");
+            lcd.print(EXPECTED_PART_ID, HEX);
+        }
+
+        delay(2000);
+        lcd.clear();
+        lcd.home();
+        lcd.print("Reset MCU!");
+        // Stop here
+        while(!false);
+    }
+
+    else
+    {
+        lcd.clear();
+        lcd.home();
+        lcd.print("Init success!");
+        delay(2000);
+    }
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Enabling HR/SPO2");
+    sensor.setMode(MAX30100_MODE_SPO2_HR);
+    lcd.setCursor(0, 1);
+    lcd.print("Done.");
+    delay(2000);
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Set LEDs to 50mA...");
+    sensor.setLedsCurrent(MAX30100_LED_CURR_50MA, MAX30100_LED_CURR_50MA);
+    lcd.setCursor(0, 1);
+    lcd.println("Done.");
+    delay(2000);
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Set LEDs to 7.6mA...");
+    sensor.setLedsCurrent(MAX30100_LED_CURR_7_6MA, MAX30100_LED_CURR_7_6MA);
+    lcd.setCursor(0, 1);
+    lcd.print("Done.");
+    delay(2000);
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Shutdown sensor...");
+    sensor.shutdown();
+    lcd.setCursor(0, 1);
+    lcd.print("Done");
+    delay(2000);
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Resume sesor...");
+    sensor.resume();
+    lcd.setCursor(0, 1);
+    lcd.print("Done.");
+    delay(2000);
+
+    uint32_t tsTempSampStart = millis();
+    lcd.clear();
+    lcd.home();
+    lcd.print("Checking temp...");
+    sensor.startTemperatureSampling();
+    while(!sensor.isTemperatureReady())
+    {
+        if (millis() - tsTempSampStart > 1000)
+        {
+            lcd.setCursor(0, 1);
+            lcd.print("ERR: Timeout!");
+            delay(1000);
+            lcd.setCursor(0, 2);
+            lcd.print("Reset MCU!");
+            // Stop here
+            while(!false);
+        }
+    }
+
+    float temperature = sensor.retrieveTemperature();
+    lcd.setCursor(0, 1);
+    lcd.print("Done.");
+    lcd.setCursor(0, 2);
+    lcd.print("Temp.: ");
+    lcd.print(temperature, 3);
+
+    if (temperature < 5)
+    {
+        lcd.setCursor(0, 3);
+        lcd.print("Odd Temp. Value!");
+        delay(2000);
+    }
+
+    else
+    {
+        lcd.setCursor(0, 3);
+        lcd.print("Passed all tests.");
+        delay(2000);
+    }
+
+    lcd.clear();
+    lcd.home();
+    lcd.print("Entering sampling");
+    lcd.setCursor(0, 1);
+    lcd.print("mode in 5 secs.");
+    delay(5000);
+
+    sensor.resetFifo();
+    lcd.clear();
+}
+
+void loop()
+{
+    uint16_t ir, red;
+
+    sensor.update();
+
+    while (sensor.getRawValues(&ir, &red))
+    {
+        lcd.home();
+        lcd.print("IR =                                    ");
+        lcd.setCursor(5, 0);
+        lcd.print(ir);
+
+        lcd.setCursor(0, 1);
+        lcd.print("LED =                                    ");
+        lcd.setCursor(7, 1);
+        lcd.print(red);
+
+        delay(700);
+    }
+}

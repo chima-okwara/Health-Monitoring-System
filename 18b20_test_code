@@ -1,0 +1,56 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       main.cpp
+//*FILE DESC:       Main source file for NL_HMS.
+//*FILE VERSION:    1.2.7e
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Friday, 18 October, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#include <Arduino.h>
+#include <HardwareSerial.h>
+#include <hms_defs.h>
+
+
+
+#include "hms.hpp"
+
+OneWire oneWire (TEMPSENSE);
+DallasTemperature tempSense(&oneWire);
+
+
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+//Attributes:
+HardwareSerial *sim800l = new HardwareSerial (USART3);
+MobileTerm sim (sim800l);
+elapsedMillis dispTime;
+
+
+void setup()
+{
+        lcdInit();
+
+        lcd.clear();
+        lcd.home();
+        lcd.print("NL_HMS_076");
+        lcd.setCursor(0, 1);
+        lcd.print("DS18B20 Test.");
+        delay(2000);
+
+
+        tempSense.begin();
+}
+
+
+void loop()
+{
+    if(dispTime >= 1000)
+    {
+        dispTime = 0;
+        tempSense.requestTemperatures();
+        float temperature = tempSense.getTempCByIndex(0);
+        lcd.setCursor(0, 2);
+        lcd.print("Temp:  ");
+        lcd.print(temperature, 3);
+        lcd.print("*C     ");
+    }
+}

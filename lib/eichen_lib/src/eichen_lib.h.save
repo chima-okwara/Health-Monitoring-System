@@ -1,0 +1,42 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//*FILE NAME:       eichen_lib.h
+//*FILE DESC:       Header file for eichen library.
+//*FILE VERSION:    0.1.1
+//*FILE AUTHOR:     Chimaroke Okwara (chima-okwara)
+//*LAST MODIFIED:   Wednesday, 14 July, 2024
+//*LICENSE:         GNU LGPL v2.1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef __EICHEN__LIB__
+#define __EICHEN__LIB__
+
+#include <Arduino.h>
+#ifndef AVG
+
+#define MinBatVoltage   9.5
+#define MaxBatVoltage   12.6
+
+//Attributes:
+
+//********************************PLEASE NOTE************************************
+//The objects below must be declared in main.cpp:
+extern float average[AVG], valueAverage, sum, avg, val, actualVal;
+extern uint32_t value;
+
+
+
+//Methods:
+float& readVoltage(const uint32_t&, const uint32_t&, const uint32_t&);      //Method that measures an analogue voltage. Arguments: Pin, Minimum expected voltage value, Maximum expected voltage value.
+
+void convToBase(float*);        //Method that divides the argument passed by 1000.
+
+void convToMilli(float*);       //Method that multiplies the argument passed by 1000.
+
+float& getBatPer(const float&, const float&, const float&);     //Method to calculate battery SoC based on voltage. Returns battery percentage as a float.
+
+template <typename T>
+    char intToChar(const T&);
+
+int charToInt(const char&)
+
+#endif
+
